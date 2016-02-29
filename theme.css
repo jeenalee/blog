@@ -58,10 +58,10 @@ header {
         font-size: 2em;
     }
     .blog_content_image {
-        width: 5em;
+        width: 15em;
     }
     .blog_content_image_larger {
-        width: 10em;
+        width: 15em;
     }
 }
 
