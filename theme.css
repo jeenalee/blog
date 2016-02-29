@@ -42,6 +42,7 @@ header {
 }
 
 @media all and (max-width: 340px) {
+    html, body
     header {
         font-size: 0.7em;
         flex-direction: column;
@@ -62,6 +63,12 @@ header {
     }
     .blog_content_image_larger {
         width: 15em;
+    }
+    .blog_content p {
+        font-size: 1.2em;
+    }
+    pre {
+        font-size: 0.9em;
     }
 }
 
