@@ -45,7 +45,8 @@ header {
     header {
         font-size: 0.7em;
         flex-direction: column;
-        height: 8.5em;
+        height: 0em;
+        position: static;
     }
     header > h1 {
         margin-bottom: 0.5em;
