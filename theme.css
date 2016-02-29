@@ -237,13 +237,13 @@ header > ul > li a:hover {
 }
 
 .blog_content_image {
-    width: 20em;
+    max-width: 20em;
     display: block;
     margin: 0 auto;
 }
 
 .blog_content_image_larger {
-    width: 40em;
+    max-width: 40em;;
     display: block;
     margin: 0 auto;
 }
