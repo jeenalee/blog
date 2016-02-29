@@ -1,0 +1,276 @@
+* {
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+a {
+    color: #000000;
+    text-decoration: none;
+}
+
+
+h1 {
+    text-transform: uppercase;
+    font-family: sans-serif ;
+    font-size: 2.5em;
+    height: 1em;
+    margin: 1em;
+    margin-right: 0.5em;
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    height: 7em;
+    font-family: sans-serif;
+    position: fixed;
+    background-color: white;
+    letter-spacing: 0.1em;
+    /*! box-shadow: 0 0 5px; */
+}
+
+@media all and (max-width: 340px) {
+    header {
+        font-size: 0.7em;
+        flex-direction: column;
+        height: 8.5em;
+    }
+    header > h1 {
+        margin-bottom: 0.5em;
+    }
+    header > ul > li {
+        font-size: 1.3em;
+    }
+    .blog_title {
+        font-size: 2em;
+    }
+    .blog_content_image {
+        width: 5em;
+    }
+    .blog_content_image_larger {
+        width: 10em;
+    }
+}
+
+header > p {
+    margin: 0 3em;
+}
+
+header > p a,
+#contact_list ul li a,
+.blog_back a,
+#blog_list ol li a {
+    border-bottom: 0.1em solid;
+    border-color: #ffffff;
+    align-items: center;
+}
+
+header > p a:hover,
+#contact_list ul li a:hover,
+.blog_back a:hover,
+#blog_list ol li a:hover {
+    border-color: #000000;
+    transition: border-color 1s;
+}
+
+header > ul {
+    letter-spacing: 0em;
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    align-items: bottom;
+    font-size: 0.9em;
+    height: 1.5em;
+}
+
+header > ul > li {
+    margin: 0 1em;
+    border-bottom: 0.5em solid;
+    border-color: #ffffff;
+}
+   
+header > ul > li a {
+    border-bottom: 0.5em solid;
+    border-color: #ffffff;
+}
+
+header > ul > li a:hover {
+    border-color: #515151;
+    transition: border-color 1s;
+}
+
+.intro {
+    margin-top: 7em;
+    margin-right: 2em;
+    margin-left: 3em;
+    margin-bottom: 3em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.intro p {
+    font-family: sans-serif;
+    line-height: 2em;
+}
+
+.current a {
+    border-color: #000000;
+}
+
+.mainpage_image{
+    width: 100%;
+    height: 85%;
+    overflow: hidden;
+    margin-top: 7em;
+}
+
+.round_border {
+    border-radius: 50%;
+}
+
+.image_smaller {
+    width: 7em;
+    margin-right: 2em;
+}
+
+.image_larger {
+    width: 100%;
+    overflow: hidden;
+}
+
+.image_icon {
+    width: 1em;
+}
+
+
+#contact_list {
+    margin: 2em 3em;
+}
+
+#contact_list a {
+    color: black;
+} 
+
+#contact_list ul li {
+    list-style-type: none;
+    border-bottom: 0.5em solid;
+    border-color: #ffffff;
+    align-items: center;
+    line-height: 1.5em;
+    font-family: sans-serif;
+}
+
+.blog_intro {
+    margin: 9em 3em 3em;
+    align-items: center;
+}
+
+.blog_intro p {
+    margin-left: 0.3em;
+}
+
+.blog_back {
+    font-family: sans-serif;
+    font-size: 0.8em;
+    margin: 0 0 2em;
+}
+
+#blog_list {
+    margin: 7em 4em;
+}
+
+#blog_list ol li {
+    line-height: 1.5em;
+    border-bottom: 0.5em solid;
+    border-color: #ffffff;
+    align-items: center;
+}
+
+.blog_title {
+    font-size: 3em;
+    font-family: serif;
+    text-transform: none;
+    width: 50%;
+    margin: 1em 0em 5em;
+    text-align: left;
+}
+
+.blog_content {
+    min-width: 10em;
+    max-width: 50em;
+}
+
+.blog_content p {
+    margin: 1em 3em 1em;
+    line-height: 1.5em;
+}
+
+.blog_content h2 {
+    margin: 0 2em;
+    line-height: 3em;
+}
+
+.blog_content h3 {
+    margin: 0 2.5em;
+    line-height: 3em;
+}
+
+.blog_content p a {
+    color: #9073bf;
+}
+
+.blog_content p a:hover {
+    color: #473c58;
+}
+
+.blog_content_image {
+    width: 20em;
+    display: block;
+    margin: 0 auto;
+}
+
+.blog_content_image_larger {
+    width: 40em;
+    display: block;
+    margin: 0 auto;
+}
+
+.blog_content_image_smaller {
+    width: 10em;
+    display: block;
+    margin: 0 auto;
+}
+
+.blog_content_code {
+    margin: 0 3em;
+    width: 50%
+}
+
+pre {
+    margin: 0 2em;
+}
+
+blockquote {
+    margin: 0 4em;
+    width: 60%;
+    line-height: 1.5em;
+}
+
+.blog_close {
+    height: 4em;
+    margin-top: 3em;
+    margin-left: 3em;
+}

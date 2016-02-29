@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      Jeena Lee
+    </title>
+    <link rel="stylesheet" type="text/css" href="theme.css"></link>
+  </head>
+  <script type="text/javascript" language="JavaScript">
+    NumberOfImages = 5;
+    FirstPart = '<img class="image_larger" src="./pics/jellyfish_';
+    LastPart = '.jpg">';
+    function printImage() {
+    var num = Math.ceil(Math.random() * NumberOfImages);
+    document.write(FirstPart + num + LastPart);
+    }
+  </script>
+  <body>
+    <header>
+      <h1><a href="./index.html">Jeena Lee</a></h1>
+      <ul>
+        <li><a href="./contact.html">contact</a></li>
+        <li><a href="./blog.html">blog</a></li>
+      </ul>
+    </header>
+    <!--<section class="intro">
+      <p>Welcome to my website. <br>This is the place I share my projects and thoughts.</p>
+    </section>-->
+    <div class="mainpage_image">
+      <script type="text/javascript" language="JavaScript">printImage()</script>
+    </div>
+  </body>
+</html>
