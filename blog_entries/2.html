@@ -94,8 +94,9 @@
 
             def insert(self, value):
                 index = self.binary_search(value, self.values, 0, len(self.values))
-                # index cannot be larger than the len(self.values)
+                # Index cannot be larger than the len(self.values)
                 if index == len(self.values) or value != self.values[index]:
+                # Use Python's built-in function, insert.
                 self.values.insert(index, value)
 
             def contains(self, value):
@@ -131,9 +132,11 @@
       <h2>Visualizing Performance</h2>
       <p>
         I collected 100 data points of each set implementation. I used
-        R and <a href="http://docs.ggplot2.org/current/">ggplot2</a> for visualizing the data.
+        R and <a href="http://docs.ggplot2.org/current/">ggplot2</a>
+        for visualizing the data.
       </p>
       <img class="blog_content_image_larger" src="./2_supp/2_set_comparison.png">
+
     </section>
   </body>
 </html>
