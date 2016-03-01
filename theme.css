@@ -98,7 +98,7 @@ header > ul {
     display: flex;
     flex-direction: row;
     list-style-type: none;
-    align-items: bottom;
+    align-items: center;
     font-size: 0.9em;
     height: 1.5em;
 }
@@ -269,6 +269,7 @@ header > ul > li a:hover {
 
 pre {
     margin: 0 2em;
+    line-height: 1.3em;
 }
 
 blockquote {
