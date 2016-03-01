@@ -272,6 +272,10 @@ pre {
     line-height: 1.3em;
 }
 
+.serif {
+    font-family: serif;
+}
+
 blockquote {
     margin: 0 4em;
     width: 60%;
