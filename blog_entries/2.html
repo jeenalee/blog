@@ -96,8 +96,8 @@
                 index = self.binary_search(value, self.values, 0, len(self.values))
                 # Index cannot be larger than the len(self.values)
                 if index == len(self.values) or value != self.values[index]:
-                # Use Python's built-in function, insert.
-                self.values.insert(index, value)
+                    # Use Python's built-in function, insert.
+                    self.values.insert(index, value)
 
             def contains(self, value):
                 index = self.binary_search(value, self.values, 0, len(self.values))
