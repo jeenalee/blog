@@ -19,8 +19,7 @@
     <section class="blog_intro">
       <p> 2016-03-01 </p>
       <h1 class="blog_title">Implementing different set algorithms: Part 1</h1>
-    </section class="blog_content">
-
+    </section>
     <section class="blog_content">
       <p>
        Here, I implemented two different set algorithms in Python, sorted list
@@ -35,16 +34,23 @@
       <h2>Algorithms</h2>
       <p>
         The two algorithms I compared are sorted list and unsorted
-        list. These are the steps I took for my project.</p>
-        <pre class="serif">
-        With a set algorithm, for each n = 2<sup>5</sup>, 2<sup>9</sup>, 2<sup>13</sup>, 2<sup>17</sup>:
-           1. Create a set S1, and time the following:
-              - a. Insert each even number in range(0, n) in order into a set S1.
-              - b. Check whether S1 contains each value in range(0, n).
-           2. Create a list of n random numbers, and a new set S2. Time the following:
-              - a. Insert the first n/2 random numbers into S2.
-              - b. Check whether S2 contains each random number.
-        </pre>
+        list. These are the steps I took for my project:
+      </p>
+      <p>
+        &nbsp;&nbsp;With a set algorithm, for each n = 2<sup>5</sup>, 2<sup>9</sup>, 2<sup>13</sup>, and 2<sup>17</sup>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        1. Create a set S1, and time the following:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        a. Insert each even number in range(0, n) in order into a set S1.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        b. Check whether S1 contains each value in range(0, n).<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        2. Create a list of n random numbers, and a new set S2. Time the following:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        a. Insert the first n/2 random numbers into S2.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        b. Check whether S2 contains each random number.<br>
+      </p>
       <p>
         In summary, I tested insertion and containment check for n sizes of 2<sup>4</sup>,
         2<sup>8</sup>, 2<sup>12</sup>, and 2<sup>16</sup>, in incremental and random orders.
@@ -54,11 +60,11 @@
       <p>
         When a <code>SortedListSet</code> is initialized, it creates an empty list:
       </p>
-      <pre>
-        class SortedListSet(object):
-            def __init__(self):
-                self.values = []
-      </pre>
+      <pre><code>
+class SortedListSet(object):
+    def __init__(self):
+        self.values = []
+      </code></pre>
       <p>
         For sorting, I used
         <a href="https://en.wikipedia.org/wiki/Binary_search_algorithm">binary
@@ -66,43 +72,43 @@
         inserting and checking containment. The binary search
         algorithm returns the index of the value:
       </p>
-      <pre>
-            def binary_search(self, value, l, start, end):
-                middle = (start + end)/2
-                # If this l is empty, 'start'
-                # and 'end' will be the same.
-                if end == start:
-                    return middle
-                elif l[middle] == value:
-                    return middle
+      <pre><code>
+   def binary_search(self, value, l, start, end):
+       middle = (start + end)/2
+           # If this l is empty, 'start'
+           # and 'end' will be the same.
+           if end == start:
+               return middle
+           elif l[middle] == value:
+               return middle
 
-                # We don't need to consider middle anymore
-                # because we ruled it out above.
-                # So we recurse with middle +/- 1.
-                # Here, we go with middle + 1.
-                elif l[middle] < value:
-                    return self.binary_search(value, l, middle + 1, end)
-                elif l[middle] > value:
-                    return self.binary_search(value, l, start, middle)
-      </pre>
+           # We don't need to consider middle anymore
+           # because we ruled it out above.
+           # So we recurse with middle +/- 1.
+           # Here, we go with middle + 1.
+           elif l[middle] < value:
+               return self.binary_search(value, l, middle + 1, end)
+           elif l[middle] > value:
+               return self.binary_search(value, l, start, middle)
+      </code></pre>
       <p>
         <code>insert</code> inserts the value at the correct index that
         <code>binary_search</code> returned, with Python's built-in function,
         insert. <code>Contains</code> check returns True or False depending on
         whether the value at the index matches the queuried number:
       </p>
-      <pre>
-            def insert(self, value):
-                index = self.binary_search(value, self.values, 0, len(self.values))
-                # Index cannot be larger than the len(self.values)
-                if index == len(self.values) or value != self.values[index]:
-                    # Use Python's built-in function, insert.
-                    self.values.insert(index, value)
+      <pre><code>
+    def insert(self, value):
+        index = self.binary_search(value, self.values, 0, len(self.values))
+            # Index cannot be larger than the len(self.values)
+            if index == len(self.values) or value != self.values[index]:
+                # Use Python's built-in function, insert.
+                self.values.insert(index, value)
 
-            def contains(self, value):
-                index = self.binary_search(value, self.values, 0, len(self.values))
-                return index < len(self.values) and value == self.values[index]
-      </pre>
+    def contains(self, value):
+       index = self.binary_search(value, self.values, 0, len(self.values))
+           return index < len(self.values) and value == self.values[index]
+      </code></pre>
       <p>
         Insertion with sorted list algorithm has big-O of
         O(log<sub>2</sub>n)+O(n), which rounds to O(n). This would be when the
@@ -116,26 +122,26 @@
         The code for unsorted list is simple. When the <code>UnsortedListSet</code>
         is initialized, it creates an empty list:
       </p>
-      <pre>
-        class UnsortedListSet(object):
-            def __init__(self):
-                self.values = []
-      </pre>
+      <pre><code>
+class UnsortedListSet(object):
+    def __init__(self):
+        self.values = []
+      </code></pre>
       <p>
         For <code>insert</code> and <code>contains</code>, the algorithm checks one
         number at a time from index of zero to the end of the list:
       </p>
-      <pre>
-            def insert(self, value):
-                if not self.contains(value):
-                    self.values.append(value)
+      <pre><code>
+    def insert(self, value):
+        if not self.contains(value):
+            self.values.append(value)
 
-            def contains(self, value):
-                for x in self.values:
-                    if x == value:
-                        return True
-                return False
-      </pre>
+    def contains(self, value):
+        for x in self.values:
+            if x == value:
+                return True
+        return False
+      </code></pre>
       <p>
         The big-O of <code>insert</code> and <code>contains</code> for
         <code>UnsortedListSet</code> are both O(n).

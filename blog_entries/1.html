@@ -103,14 +103,14 @@
       in black, while low a Fst value will be colored yellow. The code for
       generating an RGB color value using Fst value is shown below:
       </p>
-      <pre>
-        if value_type == 'fst':
-            value = round(float(value), 2)
+      <pre><code>
+if value_type == 'fst':
+    value = round(float(value), 2)
 
-            r = value
-            g = value
-            b = 0
-      </pre>
+    r = value
+    g = value
+    b = 0
+      </code></pre>
       <p>
       For fold change, I had to be a bit more creative. Fold change
       values varied in a wide range, and I decided to transform fold
@@ -122,22 +122,22 @@
       high fold change is shown in purple, while a low fold change is
       shown in green:
       </p>
-      <pre>
-        elif value_type == 'stat':
-            # Multiply by 0.1 so that the
-            # values range from -0.5 to 0.5.
-            value = round(float(value)*0.1, 2))
+      <pre><code>
+elif value_type == 'stat':
+    # Multiply by 0.1 so that the
+    # values range from -0.5 to 0.5.
+    value = round(float(value)*0.1, 2))
 
-            # Get the absolute value because fold change is
-            # subjective. It doesn't matter which population
-            # expresses gene more as long as the difference is
-            # apparent.
-            value = abs(value)
+    # Get the absolute value because fold change is
+    # subjective. It doesn't matter which population
+    # expresses gene more as long as the difference is
+    # apparent.
+    value = abs(value)
 
-            r = 0 + value
-            g = 0.5 - value
-            b = 0.3
-      </pre>
+    r = 0 + value
+    g = 0.5 - value
+    b = 0.3
+      </code></pre>
       <p>
         This is the resulting legend:
       </p>

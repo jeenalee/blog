@@ -269,18 +269,12 @@ header > ul > li a:hover {
 }
 
 pre {
-    margin: 0 2em;
+    margin: 0 3em;
+    padding: 0em 2em;
     line-height: 1.3em;
-}
-
-.serif {
-    font-family: serif;
-}
-
-blockquote {
-    margin: 0 4em;
-    width: 60%;
-    line-height: 1.5em;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    display: block;
 }
 
 .blog_close {
