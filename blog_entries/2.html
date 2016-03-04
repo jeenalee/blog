@@ -243,9 +243,11 @@
         inserting numbers in order, insertion is more like
         Python's <code>append</code>, because the new number is always
         added to the last of the list. In other words, none of the
-        items in the list is moved, and its big-O is O(1). Meanwhile,
-        insertion in <code>UnsortedListSet</code> follows a similar
-        trend as its <code>contains</code>.
+        items in the list is moved, and its big-O is O(1). This is
+        much smaller than when the inserting numbers in random order,
+        which will have big-O of O(n). Meanwhile, insertion
+        in <code>UnsortedListSet</code> follows a similar trend as
+        its <code>contains</code>.
       </p>
       <p>
         One thing I cannot explain about insertion is how inserting randomly
