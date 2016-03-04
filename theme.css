@@ -79,7 +79,7 @@ header > p {
 header > p a,
 #contact_list ul li a,
 .blog_back a,
-#blog_list ol li a {
+#blog_list ul li a {
     border-bottom: 0.1em solid;
     border-color: #ffffff;
     align-items: center;
@@ -88,7 +88,7 @@ header > p a,
 header > p a:hover,
 #contact_list ul li a:hover,
 .blog_back a:hover,
-#blog_list ol li a:hover {
+#blog_list ul li a:hover {
     border-color: #000000;
     transition: border-color 1s;
 }
@@ -197,14 +197,15 @@ header > ul > li a:hover {
 }
 
 #blog_list {
-    margin: 7em 4em;
+    margin: 7em 3em;
 }
 
-#blog_list ol li {
+#blog_list ul li {
     line-height: 1.5em;
     border-bottom: 0.5em solid;
     border-color: #ffffff;
     align-items: center;
+    list-style-type: none;
 }
 
 .blog_title {
