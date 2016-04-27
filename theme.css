@@ -212,7 +212,7 @@ header > ul > li a:hover {
     font-size: 3em;
     font-family: serif;
     text-transform: none;
-    width: 50%;
+    width: 100%;
     margin: 1em 0em 5em;
     text-align: left;
 }
