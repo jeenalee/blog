@@ -4,6 +4,9 @@
     padding: 0;
 }
 
+
+img { max-width: 100%; }
+
 html,
 body {
     position: absolute;
@@ -41,7 +44,7 @@ header {
     /*! box-shadow: 0 0 5px; */
 }
 
-@media all and (max-width: 340px) {
+@media all and (max-width: 430px) {
     html, body
     header {
         font-size: 0.7em;
@@ -59,10 +62,10 @@ header {
         font-size: 2em;
     }
     .blog_content_image {
-        width: 15em;
+        width: 20em;
     }
     .blog_content_image_larger {
-        width: 15em;
+        width: 20em;
     }
     .blog_content p {
         font-size: 1.2em;
