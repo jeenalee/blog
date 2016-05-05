@@ -59,7 +59,7 @@ header {
         font-size: 1.3em;
     }
     .blog_title {
-        font-size: 2em;
+        font-size: 1.5em;
     }
     .blog_content_image {
         width: 20em;
@@ -74,6 +74,13 @@ header {
         font-size: 0.9em;
     }
 }
+
+@media all and (max-width: 745px) {
+    .blog_content {
+        margin-top: 25em;
+    }
+}
+
 
 header > p {
     margin: 0 3em;
