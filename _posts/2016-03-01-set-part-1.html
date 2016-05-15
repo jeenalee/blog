@@ -41,13 +41,11 @@ layout: post
 <p>
   When a <code>SortedListSet</code> is initialized, it creates an empty list:
 </p>
-<pre>
-  <code>
-    class SortedListSet(object):
+{% highlight python %}
+class SortedListSet(object):
     def __init__(self):
-    self.values = []
-  </code>
-</pre>
+        self.values = []
+{% endhighlight %}
 <p>
   For sorting, I used
   <a href="https://en.wikipedia.org/wiki/Binary_search_algorithm">binary
@@ -55,47 +53,44 @@ layout: post
   inserting and checking containment. The binary search
   algorithm returns the index of the value:
 </p>
-<pre>
-  <code>
+{% highlight python %}
     def binary_search(self, value, l, start, end):
-    middle = (start + end)/2
-    # If this l is empty, 'start'
-    # and 'end' will be the same.
-    if end == start:
-    return middle
-    elif l[middle] == value:
-    return middle
+        middle = (start + end)/2
+        # If this l is empty, 'start'
+        # and 'end' will be the same.
+        if end == start:
+            return middle
+        elif l[middle] == value:
+            return middle
 
-    # We don't need to consider middle anymore
-    # because we ruled it out above.
-    # So we recurse with middle +/- 1.
-    # Here, we go with middle + 1.
-    elif l[middle] < value:
-                     return self.binary_search(value, l, middle + 1, end)
-                     elif l[middle] > value:
-      return self.binary_search(value, l, start, middle)
-  </code>
-</pre>
+        # We don't need to consider middle anymore
+        # because we ruled it out above.
+        # So we recurse with middle +/- 1.
+        # Here, we go with middle + 1.
+        elif l[middle] < value:
+            return self.binary_search(value, l, middle + 1, end)
+        elif l[middle] > value:
+            return self.binary_search(value, l, start, middle)
+{% endhighlight %}
+
 <p>
   <code>insert</code> inserts the value at the correct index that
   <code>binary_search</code> returned, with Python's built-in function,
   insert. <code>Contains</code> check returns True or False depending on
   whether the value at the index matches the queuried number:
 </p>
-<pre>
-  <code>
+{% highlight python %}
     def insert(self, value):
-    index = self.binary_search(value, self.values, 0, len(self.values))
-    # Index cannot be larger than the len(self.values)
-    if index == len(self.values) or value != self.values[index]:
-    # Use Python's built-in function, insert.
-    self.values.insert(index, value)
+        index = self.binary_search(value, self.values, 0, len(self.values))
+        # Index cannot be larger than the len(self.values)
+        if index == len(self.values) or value != self.values[index]:
+            # Use Python's built-in function, insert.
+            self.values.insert(index, value)
 
     def contains(self, value):
-    index = self.binary_search(value, self.values, 0, len(self.values))
-    return index < len(self.values) and value == self.values[index]
-   </code>
-</pre>
+        index = self.binary_search(value, self.values, 0, len(self.values))
+        return index < len(self.values) and value == self.values[index]
+{% endhighlight %}
 <p>
   Insertion with sorted list algorithm has big-O of
   O(log<sub>2</sub>n)+O(n), which rounds to O(n). This would be when the
@@ -109,30 +104,26 @@ layout: post
   The code for unsorted list is simple. When the <code>UnsortedListSet</code>
   is initialized, it creates an empty list:
 </p>
-<pre>
-  <code>
-    class UnsortedListSet(object):
+{% highlight python %}
+class UnsortedListSet(object):
     def __init__(self):
-    self.values = []
-  </code>
-</pre>
+        self.values = []
+{% endhighlight %}
 <p>
   For <code>insert</code> and <code>contains</code>, the algorithm checks one
   number at a time from index of zero to the end of the list:
 </p>
-<pre>
-  <code>
+{% highlight python %}
     def insert(self, value):
-    if not self.contains(value):
-    self.values.append(value)
+        if not self.contains(value):
+            self.values.append(value)
 
     def contains(self, value):
-    for x in self.values:
-    if x == value:
-    return True
-    return False
-  </code>
-</pre>
+        for x in self.values:
+        if x == value:
+            return True
+        return False
+{% endhighlight %}
 <p>
   The big-O of <code>insert</code> and <code>contains</code> for
   <code>UnsortedListSet</code> are both O(n).
