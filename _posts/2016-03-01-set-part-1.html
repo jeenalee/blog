@@ -1,0 +1,271 @@
+---
+title: "Analyzing Theoretical and Practical Implementations of Set Algorithms: Part 1"
+layout: post
+---
+<p>
+  Here, I implemented two different set algorithms in Python, sorted list
+  and unsorted list. I also compared their
+  performances for inserting and searching a value in a set. The
+  link to my code on GitHub
+  is <a href="https://github.com/jeenalee/set_algorithms">here</a>. This
+  is the first part of 2-part series. In the next blog entry, I
+  will write about balanced and unbalanced trees, and their performances.
+</p>
+
+<h2>Algorithms</h2>
+<p>
+  The two algorithms I compared are sorted list and unsorted
+  list. These are the steps I took for my project:
+</p>
+<p>
+  &nbsp;&nbsp;With a set algorithm, for each n = 2<sup>5</sup>, 2<sup>9</sup>, 2<sup>13</sup>, and 2<sup>17</sup>:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  1. Create a set S1, and time the following:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  a. Insert each even number in range(0, n) in order into a set S1.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  b. Check whether S1 contains each value in range(0, n).<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  2. Create a list of n random numbers, and a new set S2. Time the following:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  a. Insert the first n/2 random numbers into S2.<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  b. Check whether S2 contains each random number.<br>
+</p>
+<p>
+  In summary, I tested insertion and containment check for n sizes of 2<sup>4</sup>,
+  2<sup>8</sup>, 2<sup>12</sup>, and 2<sup>16</sup>, in incremental and random orders.
+</p>
+
+<h3>Sorted List Set</h3>
+<p>
+  When a <code>SortedListSet</code> is initialized, it creates an empty list:
+</p>
+<pre>
+  <code>
+    class SortedListSet(object):
+    def __init__(self):
+    self.values = []
+  </code>
+</pre>
+<p>
+  For sorting, I used
+  <a href="https://en.wikipedia.org/wiki/Binary_search_algorithm">binary
+    search algorithm</a> for finding the index of the value when
+  inserting and checking containment. The binary search
+  algorithm returns the index of the value:
+</p>
+<pre>
+  <code>
+    def binary_search(self, value, l, start, end):
+    middle = (start + end)/2
+    # If this l is empty, 'start'
+    # and 'end' will be the same.
+    if end == start:
+    return middle
+    elif l[middle] == value:
+    return middle
+
+    # We don't need to consider middle anymore
+    # because we ruled it out above.
+    # So we recurse with middle +/- 1.
+    # Here, we go with middle + 1.
+    elif l[middle] < value:
+                     return self.binary_search(value, l, middle + 1, end)
+                     elif l[middle] > value:
+      return self.binary_search(value, l, start, middle)
+  </code>
+</pre>
+<p>
+  <code>insert</code> inserts the value at the correct index that
+  <code>binary_search</code> returned, with Python's built-in function,
+  insert. <code>Contains</code> check returns True or False depending on
+  whether the value at the index matches the queuried number:
+</p>
+<pre>
+  <code>
+    def insert(self, value):
+    index = self.binary_search(value, self.values, 0, len(self.values))
+    # Index cannot be larger than the len(self.values)
+    if index == len(self.values) or value != self.values[index]:
+    # Use Python's built-in function, insert.
+    self.values.insert(index, value)
+
+    def contains(self, value):
+    index = self.binary_search(value, self.values, 0, len(self.values))
+    return index < len(self.values) and value == self.values[index]
+   </code>
+</pre>
+<p>
+  Insertion with sorted list algorithm has big-O of
+  O(log<sub>2</sub>n)+O(n), which rounds to O(n). This would be when the
+  inserting needs to occur at the first of the list, and all the
+  items in the list are scooted to the right. The big-O of
+  containment check is O(log<sub>2</sub>(n)).
+</p>
+
+<h3>Unsorted List Set</h3>
+<p>
+  The code for unsorted list is simple. When the <code>UnsortedListSet</code>
+  is initialized, it creates an empty list:
+</p>
+<pre>
+  <code>
+    class UnsortedListSet(object):
+    def __init__(self):
+    self.values = []
+  </code>
+</pre>
+<p>
+  For <code>insert</code> and <code>contains</code>, the algorithm checks one
+  number at a time from index of zero to the end of the list:
+</p>
+<pre>
+  <code>
+    def insert(self, value):
+    if not self.contains(value):
+    self.values.append(value)
+
+    def contains(self, value):
+    for x in self.values:
+    if x == value:
+    return True
+    return False
+  </code>
+</pre>
+<p>
+  The big-O of <code>insert</code> and <code>contains</code> for
+  <code>UnsortedListSet</code> are both O(n).
+</p>
+
+<h2>Visualizing Performance</h2>
+<p>
+  I collected 100 data points of each set implementation. I used
+  R and <a href="http://docs.ggplot2.org/current/">ggplot2</a>
+  for visualizing the data. The plot of the data on a log<sub>2</sub>
+  x-scale and y-scale looks like below:
+</p>
+<a href="/assets/2_all.png">
+  <img src="/assets/2_all.png">
+</a>
+<p>
+  While it appears that I collected each operation data at a
+  different n-sizes, each group of four boxes actually belongs to
+  one n-size. ggplot2 automatically spreads the box plots so that
+  it's easier to see the individual boxes. I used box plot because
+  it accentuates the subtle differences between operations with
+  random and non-random ordered numbers, rather than overlapping
+  them like a point plot would. Let's dive into the data a little
+  more, and look at insertion and containment check separately.
+</p>
+
+<h3>Containment Check: non-random and random</h3>
+<p>
+  In the above plot in the <code>UnsortedListSet</code> plot, you can see
+  that there are two extreme outliers that took about 2<sup>7</sup> times
+  longer for completing the <code>contains</code> operation. It is
+  odd that only two points are much slower than the other data
+  points. I think it could have been either the order of the
+  queries tested the worst case performance, or something
+  interrupted the operations somehow. When sorted in decreasing
+  order, you can see that these outliers are quite large
+  compared to the third largest value.
+</p>
+<img src="/assets/2_table1.png">
+<p>
+  Either way, I decided to exclude the two outliers so that
+  plots look cleaner. I wouldn't recommend completely excluding
+  outliers usually, but in this case, there are only 2 points so
+  I removed them from the data.
+</p>
+<a href="/assets/2_contains_wo_outliers.png">
+  <img src="/assets/2_contains_wo_outliers.png">
+</a>
+<p>
+  The big-O of containment-check would be O(log<sub>2</sub>(n))
+  for <code>SortedListSet</code>, and O(n)
+  for <code>UnsortedListSet</code>.
+</p>
+<p>
+  It is clear that the time taken for <code>contains</code> in
+  <code>SortedListSets</code> increases at a slower rate than in
+  <code>UnsortedListSets</code>, as expected. It is interesting that the
+  <code>SortedListSet</code> starts to significantly outperform
+  <code>UnsortedListSet</code> at n > 2<sup>8</sup>. More
+      interestingly, <code>SortedListSet</code> is in fact slower
+      than <code>UnsortedListSet</code> when n-size is small. The
+      overhead cost of sorting via binary search must be larger than
+      the benefit of checking containment in a sorted list.
+</p>
+<p>
+  The difference between checking containment of numbers in
+  non-random and random orders into a <code>SortedListSet</code>
+  almost does not exist. This is probably because every time a
+  new number is added to the sorted list, the algorithm does
+  binary search to find the correct index for the number. For
+  a <code>SortedListSet</code>, whether the input numbers are in
+  random or non-random order does not make a difference in the
+  resulting list.
+</p>
+<p>
+  This, however, is not true for a <code>UnsortedListSet</code>. If the input
+  numbers are given in a random order, the resulting list will
+  have numbers in a random order. <code>contains</code> in a
+  randomly ordered list takes longer than in an ordered list, as
+  you can see in the plot.
+</p>
+<h3>Insertion: non-random and random</h3>
+<p>
+  The big-O of insertion would be O(log<sub>2</sub>n + n), which
+  rounds to O(n) for <code>SortedListSet</code>. This is the sum
+  of bineary search
+  and <a href="https://wiki.python.org/moin/TimeComplexity">Python's
+    built-in <code>insert</code>
+    operation</a>. For <code>UnsortedListSet</code>, the big-O of
+  insertion is O(n).
+</p>
+<a href=""./2_supp/2_insertion.png"">
+  <img src="/assets/2_insertion.png">
+</a>
+<p>
+  Like in <code>contains</code>, the time it takes to insert numbers
+  increases at a slower rate in <code>SortedListSet</code>. Again,
+  <code>SortedListSet</code> actually takes longer insertion time for n < 2<sup>8</sup>,
+                                                                          and starts to outperform <code>UnsortedListSet</code> for n > 2<sup>8</sup>.
+</p>
+<p>
+  Unlike <code>contains</code>, the difference between inserting
+  numbers in random and non-random orders into
+  a <code>SortedListSet</code> exists. This is because when
+  inserting numbers in order, insertion is more like
+  Python's <code>append</code>, because the new number is always
+  added to the last of the list. In other words, none of the
+  items in the list is moved, and its big-O is O(1). This is
+  much smaller than when the inserting numbers in random order,
+  which will have big-O of O(n). Meanwhile, insertion
+  in <code>UnsortedListSet</code> follows a similar trend as
+  its <code>contains</code>.
+</p>
+<p>
+  One thing I cannot explain about insertion is how inserting randomly
+  ordered numbers take shorter time than ordered numbers at n = 2<sup>4</sup>. It
+  very well could be noise in data, or an interesting trend.
+</p>
+
+<h2>Conclusion and Closing Thoughts</h2>
+<p>
+  I wanted to compare the real world performace to theoretical big-O
+  in the plots, but I had difficult time representing the big-O. For
+  example, I understand that insertion for <code>UnsortedListSet</code> is O(n) but
+  that doesn't mean it should be plotted as y = x. What would be the
+  coefficient? What about the intercept?
+</p>
+<p>
+  I'm also looking forward to implementing and visualizing
+  TreeSets. I wrote a script for
+  a <code>UnbalancedTreeSet</code>, but for n > 2<sup>8</sup>,
+  it would reach the recursion limit and crash. Currently, the
+  algorithm is implemented recursively, and I'm thinking about
+  how to do it iteratively.
+</p>
+</section>

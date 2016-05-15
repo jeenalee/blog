@@ -1,0 +1,89 @@
+---
+title: Building a Scientific Python Project on Travis-CI
+layout: post
+---
+<p>
+  Lately, I have been working
+  on <a href="https://github.com/jeenalee/sklearn_pmml">a Python
+    library</a> for converting PMML represented machine learning
+  models into Python scikit-learn classifiers that can be
+  readily used for predictions. When setting up Travis-CI for
+  automated code testing, I learned a few tricks and tips that are
+  specific to scientific Python packages, such
+  as <code>numpy</code> and <code>scipy</code>. If you are
+  setting up Travis-CI for tests that are dependent on these
+  Python packages and having build errors, hopefully this
+  post will give you some ideas that you can test out.
+</p>
+
+<h2><code>pip</code> or <code>conda</code></h2>
+<p>
+  I will write about installing Python packages in Travis-CI
+  environment with
+  <a href="https://pypi.python.org/pypi/pip"><code>pip</code></a>
+  and <a href="http://conda.pydata.org/docs/"><code>conda</code></a>.
+</p>
+<h3>Package Dependencies</h3>
+<p>
+  My unittest code requires Python's machine learning library,
+  scikit-learn. Scikit-learn package depends
+  on <code>scipy</code>. <code>Scipy</code> depends
+  on <code>numpy</code>, which requires Fortran packages <code>LAPACK</code>
+  and <code>BLAS</code>.
+</p>
+<p>
+  While I've been happy with using <code>pip</code> for
+  installing Python packages, I realized that it isn't efficient
+  in installing bulk packages with complicated
+  dependency relationship. <code>Pip</code> would attempt to install the
+  last package on the dependency chain, and abort the build:
+</p>
+<img src="/assets/3_no_scipy.png">
+<p>
+  When I specified the order of packages to install by writing
+  it an individual command line for each one of them, I ran into
+  another issue, which is related to non-Python packages.
+</p>
+<h3>non-Python Packages</h3>
+<p>
+  <code>Scipy</code> and <code>numpy</code> are written heavily
+  in <code>C</code> to speed up the mathematical
+  computations. <code>Numpy's</code> required packages include
+  Fortran packages <code>LAPACK</code> and <code>BLAS</code>.
+</p>
+<p>
+  <code>Pip</code> is a Python package installer, and it isn't
+  great at installing non-Python packages. I
+  noticed <code>numpy</code> and <code>scipy</code> will fail to
+  install correctly because Travis could not
+  find <code>LAPACK</code> and <code>BLAS</code>. Even after I
+  tried installing them manually, the error would persist.
+</p>
+<img src="/assets/3_no_fortran.png">
+<br>
+<h3><code>conda</code> to the Rescue</h3>
+<p>
+  <code>Conda</code> is great for installing scientific
+  packages. After reading many entries on Stack Overflow, I
+  decided to try installing packages with Conda, and the
+  environment was able to install the packages correctly! However, I ran into <code>ImportError</code>.
+</p>
+<img src="/assets/3_no_nose.png">
+<h2>Python Unittest Packages</h2>
+<p>
+  Conda ignores any packages installed in the virtual
+  environment, and therefore <code>nose</code> that was
+  pre-installed in Travis had to be installed again. In fact, in
+  virtual environments, ignoring pre-installed packages is an
+  advantage, because it allows the user to paint on a completely
+  blank canvas, rather than a canvas with some streaks drawn
+  on. So I added <code>nose</code> to the packages to install,
+  and voila, my build was successful, and so were my tests!
+</p>
+<img src="/assets/3_success.png">
+
+<p>
+  Hope this post was helpful for you if you are about to build a
+  scientific project on Travis. Thanks for reading!
+
+</p>

@@ -1,0 +1,23 @@
+a:hover {
+    color: #34b3a0 !important;
+}
+
+.post-list a {
+    color: #454545 !important;
+}
+
+.post-content a {
+    color: #34b3a0;
+}
+
+.username {
+    color: #454545;
+}
+
+.contact-list a {
+    color: #454545;
+}
+
+.contact-list a:hover {
+    : #34b3a0 !important;
+}

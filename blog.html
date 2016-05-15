@@ -1,25 +1,24 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>
-      Jeena Lee
-    </title>
-    <link rel="stylesheet" type="text/css" href="theme.css"></link>
-  </head>
-  <body>
-    <header>
-      <h1><a href="./index.html">Jeena Lee</a></h1>
-      <ul>
-        <li><a href="./contact.html">contact</a></li>
-        <li class="current"><a>blog</a></li>
-      </ul>
-    </header>
-    <section id="blog_list">
-      <ul>
-        <li><a href="./blog/3.html">2016-04-27 Building a Scientific Python Project on Travis-CI</a></li>
-        <li><a href="./blog/2.html">2015-03-01 Analyzing Theoretical and Practical Implementations of Set Algorithms: Part 1</a></li>
-        <li><a href="./blog/1.html">2016-02-25 Drawing Circle Plots with Python</a></li>
-      </ul>
-    </section>
-  </body>
-</html>
+---
+layout: default
+title: Blog
+---
+
+<div class="home">
+
+  <h1 class="page-heading">Posts</h1>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+
+</div>
