@@ -81,16 +81,15 @@ layout: post
   in black, while low a Fst value will be colored yellow. The code for
   generating an RGB color value using Fst value is shown below:
 </p>
-<pre>
-  <code>
-    if value_type == 'fst':
+{% highlight python %}
+if value_type == 'fst':
     value = round(float(value), 2)
 
     r = value
     g = value
     b = 0
-  </code>
-</pre>
+{% endhighlight %}
+
 <p>
   For fold change, I had to be a bit more creative. Fold change
   values varied in a wide range, and I decided to transform fold
@@ -102,9 +101,8 @@ layout: post
   high fold change is shown in purple, while a low fold change is
   shown in green:
 </p>
-<pre>
-  <code>
-    elif value_type == 'stat':
+{% highlight python %}
+elif value_type == 'stat':
     # Multiply by 0.1 so that the
     # values range from -0.5 to 0.5.
     value = round(float(value)*0.1, 2))
@@ -118,8 +116,7 @@ layout: post
     r = 0 + value
     g = 0.5 - value
     b = 0.3
-  </code>
-</pre>
+{% endhighlight %}
 <p>
   This is the resulting legend:
 </p>
