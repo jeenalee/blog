@@ -6,6 +6,9 @@ a:hover {
     color: #454545 !important;
 }
 
+.post-list a:hover {
+    color: #34b3a0 !important;
+}
 .post-content a {
     color: #34b3a0;
 }
@@ -19,5 +22,9 @@ a:hover {
 }
 
 .contact-list a:hover {
-    : #34b3a0 !important;
+    color: #34b3a0 !important;
+}
+
+.rss-subscribe a {
+    color: #34b3a0;
 }
