@@ -1,3 +1,12 @@
+.site-title,
+.page-link,
+.footer-col-wrapper,
+.wrapper,
+.post-header,
+.post-content {
+    font-family: Raleway;
+}
+
 .round_border {
     border-radius: 50%;
 }
@@ -21,4 +30,8 @@
     border-color: #ffffff;
     align-items: center;
     line-height: 1.5em;
+}
+
+.footer-col-2 .username:hover{
+    color: #34b3a0;
 }
