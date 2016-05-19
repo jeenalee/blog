@@ -2,9 +2,12 @@
 .page-link,
 .footer-col-wrapper,
 .wrapper,
-.post-header,
-.post-content {
+.post-header {
     font-family: Raleway;
+}
+
+.post-content {
+    font-family: Droid Serif;
 }
 
 .round_border {
