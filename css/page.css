@@ -1,13 +1,12 @@
 .site-title,
-.page-link,
 .footer-col-wrapper,
 .wrapper,
 .post-header {
-    font-family: Raleway;
+    font-family: Raleway, Helvetica, Sans-serif;
 }
 
 .post-content {
-    font-family: Droid Serif;
+    font-family: Droid Serif, serif;
 }
 
 .round_border {
