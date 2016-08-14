@@ -3,22 +3,57 @@ title: "What is Ownership in Rust?"
 layout: post
 ---
 <p>
-  My friend <a href="https://github.com/malisas">Malisa</a> and I have been hacking on Servo this summer. We started from scratch, i.e. no experience with Rust or even compiled langauges, and it's been challenging and fun. One of the trickier Rust concepts to understand for me was Rust's references and borrowing. <a href="http://words.steveklabnik.com/">Steve Klabnik</a> wrote an awesome <a href="https://doc.rust-lang.org/book/references-and-borrowing.html">introduction</a> to the Rust's borrow system.
+  My friend <a href="https://github.com/malisas">Malisa</a> and I have
+  been hacking on Servo this summer. We started from scratch, i.e. no
+  experience with Rust let alone even compiled langauges, and it's
+  been challenging and fun. One of the trickier Rust concepts to
+  understand for me was Rust's references and
+  borrowing. <a href="http://words.steveklabnik.com/">Steve
+  Klabnik</a> wrote an
+  awesome <a href="https://doc.rust-lang.org/book/references-and-borrowing.html">introduction</a>
+  to the Rust's borrow system.
 </p>
 
 <p>
-Ownership in Rust is in many ways like owning a coloring book. You can lend it to your friends under the condition of never coloring on it -- because that would forever change the coloring book, and you will never be able to color it the way you want. If you are a very nice person and/or actually want to create a collective art piece with the coloring book, you can lend it to one friend at a time and tell them they can color however they want. You'll ask them to give the book back to you afterwards, and then you may lend it to another person. Or maybe you'll give the book to your friend forever, and they can do whatever they want with it, in which case, you're giving the ownership to your friend.
+Ownership in Rust is in many ways like owning a coloring book. You can
+lend it to your friends under the condition of never coloring on it --
+because that would forever change the coloring book, and you will
+never be able to color it the way you want. If you are a very nice
+person and/or actually want to create a collective art piece with the
+coloring book, you can lend it to one friend at a time and tell them
+they can color however they want. You'll ask them to give the book
+back to you afterwards, and then you may lend it to another person. Or
+maybe you'll give the book to your friend forever, and they can do
+whatever they want with it, in which case, you're giving the ownership
+to your friend.
 </p>
 
-<p> So I mentioned lending the book to a friend with the condition of never coloring on it. This is the Rust's default of borrowing. Anything (i.e. coloring book) that is borrowed, unless specified, is immutable (i.e. no coloring is allowed).
+<p> So I mentioned lending the book to a friend with the condition of
+never coloring on it. This is the Rust's default of
+borrowing. Anything (i.e. coloring book) that is borrowed, unless
+specified, is immutable (i.e. no coloring is allowed).
 </p>
 
-<p> If you want your coloring book to change, I wrote that only one friend can borrow it at a time. In Rust, only one object can borrow mutably. In the coloring book example, it means that you can lend it to a single friend who wants to color at a time. And the reason is quite straightforward -- imagine how chaotic it would be if more than two friends wanted to color the same page differently.
+<p> If you want your coloring book to change, I wrote that only one
+friend can borrow it at a time. In Rust, only one object can borrow
+mutably. In the coloring book example, it means that you can lend it
+to a single friend who wants to color at a time. And the reason is
+quite straightforward -- imagine how chaotic it would be if more than
+two friends wanted to color the same page differently.
 </p>
 
 <p>In both cases, if the lender wants to color the book, then they must get it back from the borrower first. How else would you color a book you don't have in your hands?</p>
 
-<p>This blog post was inspired by an <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#mut-references">example</a> the Book uses. Based on my limited experience with compiled language, I think making compiler fail and reading its messages (especially when the compiler gives detailed explanation like in Rust) is a helpful way to understand newer concepts, so I tried to branch off his example, and break things!! How fun!! I still <strike>sometimes</strike> often fight the Rust compiler's borrow checker, but a couple hours of making compiler fail definitely helped me understand the concept. So let's start with something simple that compiles!</p>
+<p>This blog post was inspired by
+an <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#mut-references">example</a>
+the Book uses. Based on my limited experience with compiled language,
+I think making compiler fail and reading its messages (especially when
+the compiler gives detailed explanation like in Rust) is a helpful way
+to understand newer concepts, so I tried to branch off his example,
+and break things!! How fun!! I still <strike>sometimes</strike> often
+fight the Rust compiler's borrow checker, but a couple hours of making
+compiler fail definitely helped me understand the concept. So let's
+start with something simple that compiles!</p>
 
 {% highlight rust %}
 fn main() {
@@ -31,7 +66,17 @@ fn main() {
     println!("{}", y);    // prints 6
 }
 {% endhighlight %}
-<p><a href="https://is.gd/w9oXjE">[Link to Code]</a> This particular example involves <a href="https://doc.rust-lang.org/book/primitive-types.html">primitive types</a>, and integral variable is one of them. While it's not obvious, by <code>let mut y = x</code>, the compiler actually makes a copy of <code>x</code> and mutably assigns it to <code>y</code>. <code>x</code> and <code>y</code> point to two different things in the memory as you can tell by how the printed values are different! The compiler will warn that <code>x</code> didn't have to be mutable, but we'll ignore that for now. So far so good. Let's now break this code!</p>
+<p><a href="https://is.gd/w9oXjE">[Link to Code]</a> This particular
+example
+involves <a href="https://doc.rust-lang.org/book/primitive-types.html">primitive
+types</a>, and integral variable is one of them. While it's not
+obvious, by <code>let mut y = x</code>, the compiler actually makes a
+copy of <code>x</code> and mutably assigns it
+to <code>y</code>. <code>x</code> and <code>y</code> point to two
+different things in the memory as you can tell by how the printed
+values are different! The compiler will warn that <code>x</code>
+didn't have to be mutable, but we'll ignore that for now. So far so
+good. Let's now break this code!</p>
 
 {% highlight rust %}
 fn main() {
@@ -43,7 +88,13 @@ fn main() {
     println!("{}", y);    // error: cannot assign to immutable borrowed content `*y`
 }
 {% endhighlight %}
-<p><a href="https://is.gd/IHcSAL">[Link to Code]</a> What happened? Unlike getting ownership in the previous example, in this example, <code>y</code> got a reference to <code>x</code>. One important thing to note is that <code>y</code> got an <b>immutable</b> reference, even though <code>y</code> itself is mutable! That is why the compiler throws an error at the end. <code>y</code> didn't have the permission to change the value, yet it tried to do so.
+<p><a href="https://is.gd/IHcSAL">[Link to Code]</a> What happened?
+Unlike getting ownership in the previous example, in this
+example, <code>y</code> got a reference to <code>x</code>. One
+important thing to note is that <code>y</code> got an <b>immutable</b>
+reference, even though <code>y</code> itself is mutable! That is why
+the compiler throws an error at the end. <code>y</code> didn't have
+the permission to change the value, yet it tried to do so.
 </p>
 
 <p> Let's now fix this code. Make the compiler happy again!</p>
@@ -57,7 +108,13 @@ fn main() {
     println!("{}", y);    // prints 6
 }
 {% endhighlight %}
-<p><a href="https://is.gd/m117I8">[Link to Code]</a> Now, <code>y</code> got an explicit permission from <code>x</code> that it can change the value it borrowed. So when we try to print <code>y</code> it successfully prints 6. Now, what happens if we try to print <code>x</code> instead? This brings us to <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#thinking-in-scopes">one</a> of the Book's examples. </p>
+<p><a href="https://is.gd/m117I8">[Link to Code]</a>
+Now, <code>y</code> got an explicit permission from <code>x</code>
+that it can change the value it borrowed. So when we try to
+print <code>y</code> it successfully prints 6. Now, what happens if we
+try to print <code>x</code> instead? This brings us
+to <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#thinking-in-scopes">one</a>
+of the Book's examples. </p>
 
 {% highlight rust %}
 fn main() {
@@ -69,7 +126,15 @@ fn main() {
     println!("{}", x);    // cannot borrow `x` as immutable because it is also borrowed as mutable
 }
 {% endhighlight %}
-<p><a href="https://is.gd/JCvOkL">[Link to Code]</a> Compilation fails! The compiler gives a pretty good explanation. It will say that it cannot borrow <code>x</code> as immutable because it is also borrowed as mutable. <code>x</code> was mutably rented out by <code>y</code> and the print statement tried to borrow it too. This violates the rule of Rust's borrow system -- only one can mutably borrow, or many can immutably borrow. The Book also shows <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#mut-references">a way</a> to correct this code by using curly brackets.
+<p><a href="https://is.gd/JCvOkL">[Link to Code]</a> Compilation
+fails! The compiler gives a pretty good explanation. It will say that
+it cannot borrow <code>x</code> as immutable because it is also
+borrowed as mutable. <code>x</code> was mutably rented out
+by <code>y</code> and the print statement tried to borrow it too. This
+violates the rule of Rust's borrow system -- only one can mutably
+borrow, or many can immutably borrow. The Book also
+shows <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#mut-references">a
+way</a> to correct this code by using curly brackets.
 
 {% highlight rust %}
 fn main() {
@@ -81,7 +146,11 @@ fn main() {
     println!("{}", x);    // prints 6
 }
 {% endhighlight %}
-<p><a href="https://is.gd/H0lBUB">[Link to Code]</a> The Book does a better job in explaining scopes than I can, so I highly recommend reading <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#thinking-in-scopes">the Book</a> about this section. Let's break this code again one last time.</p>
+<p><a href="https://is.gd/H0lBUB">[Link to Code]</a> The Book does a
+better job in explaining scopes than I can, so I highly recommend
+reading <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#thinking-in-scopes">the
+Book</a> about this section. Let's break this code again one last
+time.</p>
 
 {% highlight rust %}
 fn main() {
@@ -93,6 +162,10 @@ fn main() {
     println!("{}", y);    // error: unresolved name `y`
 }
 {% endhighlight %}
-<p><a href="https://is.gd/D67btY">[Link to Code]</a> The compiler fails to understand what <code>y</code> is. This is because <code>y</code> is defined inside curly brackets, and outside of them, <code>y</code> doesn't exist! This feature gets very handy when you want to define things only temporarily.</p>
+<p><a href="https://is.gd/D67btY">[Link to Code]</a> The compiler
+fails to understand what <code>y</code> is. This is
+because <code>y</code> is defined inside curly brackets, and outside
+of them, <code>y</code> doesn't exist! This feature gets very handy
+when you want to define things only temporarily.</p>
 
 <p>Now you should go break some codes! Thanks for reading!</p>
