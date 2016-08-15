@@ -114,7 +114,7 @@ fails. <code>y</code> didn't have the permission to change the value,
   yet it tried to do so anyways.</p>
 
 <p>
- Now that we know what's going on, let's fix this code and make
+Now that we know what's going on, let's fix this code and make
 the compiler happy again!</p>
 
 {% highlight rust %}
@@ -133,11 +133,11 @@ y is: 6
 {% endhighlight %}
 
 <p>
-Now, <code>y</code> takes a mutable borrow of <code>x</code>, and it
+<code>y</code> takes a mutable borrow of <code>x</code>, and it
 can change <code>x</code>'s value. So when we print <code>y</code> it
 successfully prints 6.
 </p>
-<p>Now, what happens if we try to print <code>x</code> instead? This
+<p>What happens if we try to print <code>x</code> instead? This
 brings us
 to <a href="https://doc.rust-lang.org/book/references-and-borrowing.html#thinking-in-scopes">one</a>
 of the Book's examples.</p>
