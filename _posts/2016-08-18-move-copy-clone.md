@@ -10,9 +10,10 @@ In order to understand the answers to those questions, I had to understand what'
 
 This blog post is a review/note to myself about these concepts in the context of Rust: what happens in the stack and the heap when a variable is moved, cloned or copied.
 
+## The Stack and The Heap
+
 Computer memory is like the human memory in the brain; it stores information. The heap and the stack are arbitrary regions in the memory with different functions, just like how we arbitrarily divided the human brain into different lobes. Like how the frontal lobe of the brain carries out functions that are different from occipital lobe, the stack and heap have different responsibilities.
 
-## The Stack and The Heap
 The stack stores information about where in the heap to find more detailed information (unless it's a special kind of information which we'll cover later), like a library directory. It will tell us where to find the data we need, i.e. "The Harry Potter series starts at the shelf 1 and continues for 3 shelves". Just like how we wouldn't add the entire script of the Harry Potter book in the directory every time a new book came out, the stack doesn't contain the actual data (except for primitive types which we'll cover later).
 
 The actual data would be stored in the heap. Because the heap reserves some extra room for the data, the data can grow or shrink. Think of library shelves that are about half empty so that the librarian can add more books if they need to, because who knew JK Rolling would write an 8th Harry Potter book, and maybe she'll write even more!
@@ -47,7 +48,7 @@ length capacity pointer         heap
 println!("Free coloring book looks like:\n {:?}", free_coloring_book);
 {% endhighlight %}
 [Link to code](https://is.gd/cZIzFU) and the compiler's message:
-{% highlight bash %}
+{% highlight console %}
 error: use of moved value: `free_coloring_book` [--explain E0382]
  --> <anon>:7:53
   |>
@@ -63,25 +64,25 @@ It's because the value of `free_coloring_book` *moved* to `friends_coloring_book
 println!("Our friend's coloring book looks like: {:?}", friends_coloring_book);
 {% endhighlight %}
 [Link to code](https://is.gd/SC86Xx) and its output:
-{% highlight bash %}
+{% highlight console %}
 Our friend's coloring book looks like:
  ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune"]
 {% endhighlight %}
 
-Upon flipping through the pages of the coloring book, our friend gets quite upset that the coloring book missed out on pluto. So they decide to add pluto to their coloring book. Because the coloring book is a vector, they can add a page pretty easily:
+Upon flipping through the pages of the coloring book, our friend gets disappointed that the coloring book missed out on pluto. So they decide to add pluto to their coloring book. Because the coloring book is a vector, they can add a page pretty easily:
 {% highlight rust %}
 friends_coloring_book.push("pluto");
 println!("Our friend's coloring book after adding pluto: \n {:?}", friends_coloring_book);
 {% endhighlight %}
 
 [Link to code](https://is.gd/39wUoj) and its output:
-{% highlight bash %}
+{% highlight console %}
 Our friend's coloring book after adding pluto:
  ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto"]
 {% endhighlight %}
 
 What would happen in the memory?
-{% highlight bash %}
+{% highlight console %}
 length capacity pointer         heap
   9       16      ->              ... | "mercury" | ..(6 other planets).. | "neptune" | "pluto" | ...
   9??     16      (not usuable)
@@ -90,19 +91,19 @@ length capacity pointer         heap
 `capacity` remains the same, because the vector still has enough room in case it grows. `length`, however, is now changed to 9. This allows the pointer to know that the length of the vector is 9, starting at location #.
 
 ## Clone
-So far, our friend claimed ownership of the `free_coloring_book`, and they modified it by adding `"pluto"` to the book. What if you didn't like this change? You decide to make a `clone` of our friends coloring book so that you can make your own version:
+So far, our friend claimed ownership of the `free_coloring_book`, and they modified it by adding `"pluto"` to the book. What if you didn't like this change? You decide to make a *clone* of our friends coloring book so that you can make your own version:
 
 {% highlight rust %}
 let mut my_coloring_book = friends_coloring_book.clone();
 {% endhighlight %}
 
-{% highlight bash %}
+{% highlight console %}
 length capacity pointer         heap
   9       16      ->              ... | "mercury" | ..(6 other planets).. | "neptune" | "pluto" | ...
   9       16      ->              ... | "mercury" | ..(6 other planets).. | "neptune" | "pluto" | ...
   9??     16      (not usuable)
 {% endhighlight %}
-When the data is cloned, it creates an exactly identical copy of the data that is independent of the original data. You argue that pluto is a dwarf planet, and should not be on a coloring book for planets. So you remove the last element (`"pluto"`) from `my_coloring_book`. What happens?
+When the data is cloned, it creates an exactly identical copy of the data that is independent of the original data. You argue that pluto is a dwarf planet, and should not be on a coloring book of planets. So you remove the last element (`"pluto"`) from `my_coloring_book`. What happens?
 {% highlight rust %}
 my_coloring_book.pop();
 
@@ -142,7 +143,7 @@ fn main() {
 }
 {% endhighlight %}
 
-The reason the compiler was able to print both `x` and `y` is that `x` and `y` are different. When the compiler sees `let mut y = x;`, it creates `y` as a separate copy of `x`. What does that mean? Let's visualize it:
+The reason the compiler was able to print both `x` and `y` is that `x` and `y` are different. Unlike with vectors in which case the value moved, when the compiler sees `let mut y = x;`, it creates `y` as a separate copy of `x`. What does this look like in the stack? Let's visualize it:
 {% highlight console %}
   value    name
     5        y
@@ -177,6 +178,6 @@ Interesting! By incrementing `y`, `x`'s data was in fact modified.
 
 Let's go back to the question I started with: why do seasoned rustaceans strongly prefer borrowing over cloning or copying variables? It's because by borrowing instead of cloning or copying, you can save potentially a huge amount of memory space!
 
-Also, every piece of data has an owner, and when the owner goes out of scope, the memory bits that were hosting the data are freed as well. This removes the need of garbage collection, which is a computationally expensive process! This makes Rust super fast, and is the reason Rust's borrow system is awesome.
+Also, every piece of data has an owner, and when the owner goes out of scope, the memory bits that were hosting the data are freed as well. This removes the need of garbage collection, which is a computationally expensive process! This makes Rust super fast, and is another reason Rust's borrow system is awesome.
 
-I've been really enjoying learning Rust, because it has encouraged me to think about what's going on *inside* the computer when I type something. By copying and cloning, is my program taking up more than necessary space in the memory? Can I make a reference instead? What is happening when I add or delete something? So much to learn!
+I've been really enjoying learning Rust, because it has encouraged me to think about what's happening *inside* the computer when I type something. By copying and cloning, is my program taking up more than necessary space in the memory? Can I make a reference instead? What is happening when I add or delete something? So much to learn!
