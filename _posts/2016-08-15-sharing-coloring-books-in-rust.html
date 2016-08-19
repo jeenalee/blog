@@ -95,7 +95,7 @@ fn main() {
 }
 {% endhighlight %}
 <a href="https://is.gd/0sC8kK">Link to code</a>, and its compilation message:
-{% highlight bash %}
+{% highlight console %}
 error: cannot assign to immutable borrowed content `*y`
  --> <anon>:5:5
 5 |>     *y += 1;
@@ -128,7 +128,7 @@ fn main() {
 }
 {% endhighlight %}
 <a href="https://is.gd/o1nKt9">Link to code</a>, and its output:
-{% highlight bash %}
+{% highlight console %}
 y is: 6
 {% endhighlight %}
 
@@ -153,7 +153,7 @@ fn main() {
 }
 {% endhighlight %}
 <a href="https://is.gd/ZYdXsQ">Link to code</a>, and its compilation message:
-{% highlight bash %}
+{% highlight console %}
 error: cannot borrow `x` as immutable because it is also borrowed as mutable [--explain E0502]
    --> <anon>:7:26
 3   |>     let mut y = &mut x;
@@ -195,7 +195,7 @@ fn main() {
 }
 {% endhighlight %}
 <a href="https://is.gd/4Razar">Link to code</a>, and its output:
-{% highlight bash %}
+{% highlight console %}
 x is: 6
 {% endhighlight %}
 
@@ -218,7 +218,7 @@ fn main() {
 }
 {% endhighlight %}
 <a href="https://is.gd/BffVNx">Link to code</a>, and its compilation message:
-{% highlight bash %}
+{% highlight console %}
 error: unresolved name `y`. Did you mean `x`? [--explain E0425]
  --> <anon>:7:26
 7 |>     println!("y is: {}", y);
