@@ -2,6 +2,11 @@
 title: "Moving, Cloning, and Copying Coloring Books in Rust"
 layout: post
 ---
+
+- Change the drawings
+- Stack and the Heap. The rules. Heap is the wild wild west, the stack is the packed organized.
+- copy is when you duplicate the surface layer. Sometimes by doing so, you duplicate all the data you need, i.e. when the element does not have any dependents (i.e. a vector that has elements). Examples of types that implement copy trait in Rust are boolean, numbers, and characters. and reuse the example from previous blog, and draw it out.
+
 As a new Rustacean, I had heard about how awesome the Rust borrow system is, but I had not quite understood why. One thing I learned about myself recently is that if I wanted to be an efficient learner, it is important for me to understand the 'why' part.
 
 So, that brings me to the question: why is Rust's borrow system considered great? Why do seasoned rustaceans strongly prefer borrowing over copying or cloning variables?
