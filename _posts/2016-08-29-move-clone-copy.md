@@ -145,13 +145,14 @@ It's because the value of `free_coloring_book` *moved* to
 is totally accessible!:
 
 {% highlight rust %}
-println!("Our friend's coloring book looks like: {:?}", friends_coloring_book);
+println!("Our friend's coloring book looks like:\n {:?}", friends_coloring_book);
 {% endhighlight %}
 
 [Link to code](https://is.gd/SC86Xx) and its output:
 
 {% highlight console %}
-Our friend's coloring book looks like: ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune"]
+Our friend's coloring book looks like:
+ ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune"]
 {% endhighlight %}
 
 Upon flipping through the pages of the coloring book, our friend gets
@@ -161,13 +162,14 @@ is a vector, they can add a page pretty easily:
 
 {% highlight rust %}
 friends_coloring_book.push("pluto");
-println!("Our friend's coloring book after adding Pluto: \n {:?}", friends_coloring_book);
+println!("Our friend's coloring book after adding Pluto:\n {:?}", friends_coloring_book);
 {% endhighlight %}
 
 [Link to code](https://is.gd/J470Yw) and its output:
 
 {% highlight console %}
-Our friend's coloring book after adding Pluto: ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto"]
+Our friend's coloring book after adding Pluto:
+ ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto"]
 {% endhighlight %}
 
 What would happen in the memory?
@@ -208,8 +210,10 @@ println!("Our friend's coloring book:\n {:?}", friends_coloring_book);
 [Link to code](https://is.gd/vh9Cdm) and its output:
 
 {% highlight console %}
-My coloring book after removing Pluto: ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune"]
-Our friend's coloring book: ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto"]
+My coloring book after removing Pluto:
+ ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune"]
+Our friend's coloring book:
+ ["mercury", "venus", "earth", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto"]
 {% endhighlight %}
 
 `my_coloring_book` and `friends_coloring_book` are different! They are
