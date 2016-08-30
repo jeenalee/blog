@@ -195,7 +195,7 @@ let mut my_coloring_book = friends_coloring_book.clone();
 ![after cloning](/pics/moveclonecopy/clone1.jpg)
 
 When the data is cloned, it creates an exactly identical copy of the
-data that is independent of the original data. You argue that Pluto is
+data that is independent of the original data<sup><a href="#ref_0">0</a></sup>. You argue that Pluto is
 a dwarf planet, and should not be on a coloring book of planets. So
 you remove the last element (`"pluto"`) from `my_coloring_book`. What
 happens?
@@ -309,3 +309,6 @@ necessary space in the memory? Can I make a reference instead? How is
 memory managed differently in other languages, like Python?
 
 So much to learn!
+
+<p id="ref_0"><small><sup>0</sup> CUViper on Rust subreddit kindly <a href="https://www.reddit.com/r/rust/comments/5066ym/moving_cloning_and_copying_coloring_books_in_rust/d71zven">pointed out</a> an error in my diagram. Planets are <code>&'static str</code>, and when they are cloned, <i>pointer</i> to the <code>&str</code> is cloned. The actual <code>&'static str</code> data are not cloned. If the planets were <code>String</code> (which is internally a vector of <code>char</code>) then the actual data will be cloned as well. My diagram makes it look like the string data are cloned as well, but that is not what actually would happen. I didn't know about this! Thank you u/CUViper!
+</small></p>
