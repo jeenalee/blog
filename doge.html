@@ -5,7 +5,7 @@
   <meta charset="utf8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>How to implement an API for Servo</title>
+  <title>How to implement a new DOM API for Servo</title>
   <link rel="stylesheet" href="/css/main.css">
   <link rel="stylesheet" href="/css/page.css">
   <link rel="stylesheet" href="/css/blog.css">
@@ -64,9 +64,6 @@
 
 
 
-
-
-
       </div>
     </nav>
 
@@ -80,21 +77,30 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">How to implement an API for Servo</h1>
+    <h1 class="post-title" itemprop="name headline">How to implement a new DOM API for Servo</h1>
     <p class="post-meta"><time datetime="2016-09-29T00:00:00-07:00" itemprop="datePublished">Sep 29, 2016</time></p>
   </header>
 
   <div class="post-content" itemprop="articleBody">
-    <p>Servo is an awesome project about making a web browser engine in Rust! It is really well maintained with friendly contributors and mentors. I highly recommend honing your programming skills while doing something good through contributing to Servo. Because Servo is a new web browser engine, there are so many relatively easy tasks waiting for new contributors. One of the things you as a contributor can do is implementing a DOM or Web API for Servo.</p>
+    <p>Servo is an awesome project about making a web browser engine in Rust! It is really well maintained with friendly contributors and mentors. Because Servo is a new web browser engine, there are so many relatively easy tasks waiting for new contributors. One of the things you as a contributor can do is implementing a DOM API for Servo.</p>
 
-<p>Malisa and I implemented a few APIs over the summer. There are lots of great documentation on how to get started, but we still felt a bit lost in the beginning. So we decided to make a tutorial for people who are relatively new to Servo and want a little more concrete example on implementing an API for Servo.</p>
+<p>Malisa and I implemented a few DOM APIs over the summer. There are lots of great documentation on how to get started, but we still felt a bit lost in the beginning. So we decided to make a tutorial for people who are relatively new to Servo and want a little more concrete example on implementing a new DOM API for Servo.</p>
 
-<p>In this blog post, I will implement a fake DOM API called <code class="highlighter-rouge">Doge</code>. This API comes with a fake spec that describes the standard Doge should follow. <a href="https://jeenalee.github.io/doge-standard/">You should give it a very brief skim before continuing</a>.</p>
+<p>In this blog post, I will implement <em>the</em> up and coming DOM API called ✨<strong>Doge</strong>✨. This API has a spec that describes the standard Doge API should follow. <a href="https://jeenalee.github.io/doge-standard/">You should give it a very brief skim before continuing</a>.</p>
 
-<p>Doge is a relatively simple API. You can create a new Doge object that has an associated <code class="highlighter-rouge">such_list</code>. If an initializer is given, that will be used to populate the new Doge. You can add more words to <code class="highlighter-rouge">such_list</code> through the <code class="highlighter-rouge">append</code> method. You can get a random word from <code class="highlighter-rouge">such_list</code> through the <code class="highlighter-rouge">random</code> method. Simple! So, how do we start?</p>
+<p>Doge is a relatively simple DOM API. You can create a new Doge object that has an associated <em>such list</em>. If an initializer is given, that will be used to populate the new Doge. You can add more words to <em>such list</em> through the <code class="highlighter-rouge">append</code> method. You can get a random word from <em>such list</em> through the <code class="highlighter-rouge">random</code> method. Simple! So, how do we start?</p>
+
+<h2 id="architecture">Architecture</h2>
+<p>These are the most relevant directories for us. <code class="highlighter-rouge">script</code> is a crate, which includes a module <code class="highlighter-rouge">dom</code>. <code class="highlighter-rouge">webidls</code> hosts all the WebIDL files for the DOM APIs:</p>
+
+<figure class="highlight"><pre><code class="language-console" data-lang="console">.
+├── components
+│   ├── script
+│   |   ├── dom
+│   |   |   ├── webidl</code></pre></figure>
 
 <h2 id="webidl">WebIDL</h2>
-<p>First, we should get the webidl that is in the spec. Copy them and put them in <code class="highlighter-rouge">componenets/script/dom/webidls/Doge.webidl</code>. For now, we’ll comment out the methods for Doge in the webidl. It’s easier to comment out all of them, and add one and its implementation at a time. It will look like below after adding the license and the spec link:</p>
+<p>First, we should get the webidl that is in the spec. Copy them and put them in <code class="highlighter-rouge">componenets/script/dom/webidls/Doge.webidl</code>. For now, we’ll comment out the methods for Doge in the webidl. It’s easiest to comment them all out, and then implement one method at a time. It will look like below after adding the license and the spec link:</p>
 
 <figure class="highlight"><pre><code class="language-console" data-lang="console">/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -102,41 +108,41 @@
 
 // https://jeenalee.github.io/doge-standard/
 
-typedef sequence&lt;ByteString&gt; DogeInit;
+typedef sequence&lt;DOMString&gt; DogeInit;
 
 [Constructor(optional DogeInit init),
  Exposed=(Window,Worker)]
 
 interface Doge {
-  // void append(ByteString word);
-  // ByteString random();
+  // void append(DOMString word);
+  // DOMString random();
 };</code></pre></figure>
 
 <p>If this is the first time adding a webidl to Servo from this specific domain, make sure to add it to <code class="highlighter-rouge">python/tidy/servo_tidy/tidy.py</code> so that <code class="highlighter-rouge">test-tidy</code> will know it’s a valid webidl standard.</p>
 
-<h2 id="list-doge-as-a-submodule">List Doge as a submodule</h2>
-<p><code class="highlighter-rouge">script/</code> is a crate. <code class="highlighter-rouge">script/dom/</code> is a module under <code class="highlighter-rouge">script/</code>. <code class="highlighter-rouge">doge.rs</code> is a submodule under <code class="highlighter-rouge">dom/</code> so we should make it discoverable by the rest of Servo. We do so by listing the submodule in the <code class="highlighter-rouge">lib.rs</code> or <code class="highlighter-rouge">mod.rs</code> at the root of the module. In our case, we would add the following line to <code class="highlighter-rouge">componenets/script/dom/mod.rs</code>:</p>
+<h2 id="listing-doge-as-a-submodule">Listing Doge as a submodule</h2>
+<p><code class="highlighter-rouge">doge.rs</code> is a submodule under <code class="highlighter-rouge">dom</code> so we should make it discoverable by the rest of Servo. We do so by listing the submodule in the <code class="highlighter-rouge">lib.rs</code> or <code class="highlighter-rouge">mod.rs</code> at the root of the module. In our case, we would add the following line to <code class="highlighter-rouge">componenets/script/dom/mod.rs</code>:</p>
 
 <figure class="highlight"><pre><code class="language-rust" data-lang="rust"><span class="k">pub</span> <span class="k">mod</span> <span class="n">doge</span><span class="p">;</span></code></pre></figure>
 
-<h2 id="corresponding-rust-code">Corresponding Rust code</h2>
-<p>Doge is a dom struct and has an associated such_list. So we can write that like the following in <code class="highlighter-rouge">componenets/script/dom/doge.rs</code>:</p>
+<h2 id="implementing-doge">Implementing Doge</h2>
+<p>Doge is a dom struct and has an associated <em>such list</em>. So we can write that like the following in <code class="highlighter-rouge">components/script/dom/doge.rs</code>:</p>
 
 <figure class="highlight"><pre><code class="language-rust" data-lang="rust"><span class="err">#</span><span class="p">[</span><span class="n">dom_struct</span><span class="p">]</span>
 <span class="k">pub</span> <span class="k">struct</span> <span class="n">Doge</span> <span class="p">{</span>
     <span class="n">reflector_</span><span class="p">:</span> <span class="n">Reflector</span><span class="p">,</span>
-    <span class="n">such_list</span><span class="p">:</span> <span class="n">DOMRefCell</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">ByteString</span><span class="o">&gt;&gt;</span><span class="p">,</span>
+    <span class="n">such_list</span><span class="p">:</span> <span class="n">DOMRefCell</span><span class="o">&lt;</span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">DOMString</span><span class="o">&gt;&gt;</span><span class="p">,</span>
 <span class="p">}</span></code></pre></figure>
 
-<p>Because everything we write will be in Rust but the web speaks JaveScript, we need something that can connect the JS world and the Rust world. This will be <code class="highlighter-rouge">reflector_</code>, which provides a pointer from/to the JS object. We want <code class="highlighter-rouge">such_list</code> to be able to be modified, so we’ll allow interior mutability by wrapping it with <code class="highlighter-rouge">DOMRefCell</code>.</p>
+<p>Because everything we write will be in Rust but the web speaks JavaScript, we need something that can connect the JS world and the Rust world. This will be <code class="highlighter-rouge">reflector_</code>, which provides a pointer to the JS object. We want <code class="highlighter-rouge">such_list</code> to be able to be modified, so we’ll allow interior mutability by wrapping it with <code class="highlighter-rouge">DOMRefCell</code>. <code class="highlighter-rouge">DOMRefCell</code> is like <code class="highlighter-rouge">RefCell</code>, but it enables JS garbage collector tracing.</p>
 
-<p>Now we write the functions required for creating a new Doge object!</p>
+<p>Let’s write the functions required for creating a new Doge object!</p>
 
-<h4 id="impl-doge">Impl Doge</h4>
-<p>We need three functions for creating a new Doge: <code class="highlighter-rouge">new_inherited</code>, <code class="highlighter-rouge">new</code> and <code class="highlighter-rouge">Constructor</code>. <code class="highlighter-rouge">Constructor</code> is called by the JS world, which calls <code class="highlighter-rouge">new</code>, which in turn calls <code class="highlighter-rouge">new_inherited</code>. Let’s work on <code class="highlighter-rouge">new_inherited</code>, <code class="highlighter-rouge">new</code>, and then <code class="highlighter-rouge">Constructor</code>.</p>
+<h4 id="impl-doge"><strong>Impl Doge</strong></h4>
+<p>We need three functions for creating a new Doge object: <code class="highlighter-rouge">new_inherited</code>, <code class="highlighter-rouge">new</code> and <code class="highlighter-rouge">Constructor</code>. <code class="highlighter-rouge">Constructor</code> is called by the JS world, which calls <code class="highlighter-rouge">new</code>, which in turn calls <code class="highlighter-rouge">new_inherited</code>. Let’s work on <code class="highlighter-rouge">new_inherited</code>, <code class="highlighter-rouge">new</code>, and then <code class="highlighter-rouge">Constructor</code>.</p>
 
 <ul>
-  <li><code class="highlighter-rouge">new_inherited</code>
+  <li><code class="highlighter-rouge">new_inherited</code>:
 This is where an instance of the Doge struct is created. Sometimes, parameters may be used here, but Doge doesn’t require any:</li>
 </ul>
 
@@ -148,8 +154,8 @@ This is where an instance of the Doge struct is created. Sometimes, parameters m
 <span class="p">}</span></code></pre></figure>
 
 <ul>
-  <li><code class="highlighter-rouge">new</code>
-This is where it creates a connection between the JS world (<code class="highlighter-rouge">global</code>) and the Rust Doge object. It does so by calling a special function called <code class="highlighter-rouge">reflect_dom_object</code>. This will allow the Rust object to be referenced by the JS World and vice versa. <code class="highlighter-rouge">new</code> method returns a JS Rooted object (<code class="highlighter-rouge">Root&lt;Doge&gt;</code>), which will allow the JavaScript garbage collector to trace this object.</li>
+  <li><code class="highlighter-rouge">new</code>:
+This is where a connection between the JS world (<code class="highlighter-rouge">global</code>) and the Rust Doge object is created. It does so by calling a special function called <code class="highlighter-rouge">reflect_dom_object</code>. This will allow the Rust object to be referenced by the JS World and vice versa. <code class="highlighter-rouge">new</code> method returns a JS Rooted object (<code class="highlighter-rouge">Root&lt;Doge&gt;</code>), which will prevent the JavaScript garbage collector from collecting this object while it’s used in the Rust world.</li>
 </ul>
 
 <figure class="highlight"><pre><code class="language-rust" data-lang="rust"><span class="k">pub</span> <span class="k">fn</span> <span class="nf">new</span><span class="p">(</span><span class="n">global</span><span class="p">:</span> <span class="n">GlobalRef</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="n">Root</span><span class="o">&lt;</span><span class="n">Doge</span><span class="o">&gt;</span> <span class="p">{</span>
@@ -157,20 +163,20 @@ This is where it creates a connection between the JS world (<code class="highlig
 <span class="p">}</span></code></pre></figure>
 
 <ul>
-  <li>Constructor
-Constructor <em>constructs</em> the new Doge object, and will add some fields if an initializer (like <code class="highlighter-rouge">init</code>) is given. In our case Doge can be given a DogeInit that is a sequence of ByteString. The spec for contructor states that:</li>
+  <li><code class="highlighter-rouge">Constructor</code>:
+This function <em>constructs</em> the new Doge object, and will add some fields if an initializer (like <code class="highlighter-rouge">init</code>) is given. In our case Doge can be given a <code class="highlighter-rouge">DogeInit</code> that is a sequence of <code class="highlighter-rouge">DOMString</code>. The spec for contructor states that:</li>
 </ul>
 
 <blockquote>
 
   <ol>
-    <li>Let doge be a new Doge object.</li>
-    <li>If init is given, for each word in init, append word to the associated such list. Rethrow any exception.</li>
-    <li>Return doge.</li>
+    <li>Let <em>doge</em> be a new <code class="highlighter-rouge">Doge</code> object.</li>
+    <li>If <em>init</em> is given, for each <em>word</em> in <em>init</em>, append <em>word</em> to the associated <em>such list</em>.</li>
+    <li>Return <em>doge</em>.</li>
   </ol>
 </blockquote>
 
-<p>So, we follow the spec, and write the constructor! <code class="highlighter-rouge">Constructor()</code> must return <code class="highlighter-rouge">Fallible</code> type, which is special for Servo. <code class="highlighter-rouge">Fallible</code> is like the <code class="highlighter-rouge">Result</code> type.</p>
+<p>So, we follow the spec, and write the constructor! <code class="highlighter-rouge">Constructor()</code> must return <code class="highlighter-rouge">Fallible</code> type, which is special <code class="highlighter-rouge">Return</code> type for Servo.</p>
 
 <figure class="highlight"><pre><code class="language-rust" data-lang="rust"><span class="c">// https://jeenalee.github.io/doge-standard/#dom-doge</span>
 <span class="k">pub</span> <span class="k">fn</span> <span class="nf">Constructor</span><span class="p">(</span><span class="n">global</span><span class="p">:</span> <span class="n">GlobalRef</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="nb">Option</span><span class="o">&lt;</span><span class="n">DogeInit</span><span class="o">&gt;</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="n">Fallible</span><span class="o">&lt;</span><span class="n">Root</span><span class="o">&lt;</span><span class="n">Doge</span><span class="o">&gt;&gt;</span> <span class="p">{</span>
@@ -188,36 +194,36 @@ Constructor <em>constructs</em> the new Doge object, and will add some fields if
 
 <p>That’s not too bad, right? Now, let’s write the <code class="highlighter-rouge">append</code> method!</p>
 
-<h4 id="impl-dogemethods-for-doge-">impl DogeMethods for Doge {}</h4>
+<h4 id="impl-dogemethods-for-doge"><strong>impl DogeMethods for Doge</strong></h4>
 <p><strong><code class="highlighter-rouge">append</code> method</strong></p>
 
-<p>Let’s uncomment the <code class="highlighter-rouge">append</code> method from the webidl, then try to compile:</p>
+<p>Let’s uncomment the <code class="highlighter-rouge">append</code> method from the webidl.</p>
 
 <figure class="highlight"><pre><code class="language-console" data-lang="console">interface Doge {
-  void append(ByteString word);
-  // ByteString random();
+  void append(DOMString word);
+  // DOMString random();
 };</code></pre></figure>
 
-<p>This will definitely fail! <em>However</em> the bindgen generates a code related to Doge. You can find that in <code class="highlighter-rouge">target/debug/build/script-24ce84287e21c35f/out/Bindings/DogeBinding.rs</code> or something like that. Search for <code class="highlighter-rouge">DogeMethods</code>, and it will show:</p>
+<p>Now let’s try to compile. This will definitely fail! <em>However</em>, the DOM bindings generator creates a code related to Doge. You can find that in <code class="highlighter-rouge">target/debug/build/script-blah/out/Bindings/DogeBinding.rs</code> or something like that. Search for <code class="highlighter-rouge">DogeMethods</code>, and it will show:</p>
 
 <figure class="highlight"><pre><code class="language-rust" data-lang="rust"><span class="k">pub</span> <span class="k">trait</span> <span class="n">DogeMethods</span> <span class="p">{</span>
-    <span class="k">fn</span> <span class="nf">Append</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">,</span> <span class="n">word</span><span class="p">:</span> <span class="n">ByteString</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="p">();</span>
+    <span class="k">fn</span> <span class="nf">Append</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">,</span> <span class="n">word</span><span class="p">:</span> <span class="n">DOMString</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="p">();</span>
 <span class="p">}</span></code></pre></figure>
 
-<p>Ohhh how <em>neat!</em> Now we know exactly how to start writing the <code class="highlighter-rouge">append</code> method. <code class="highlighter-rouge">append</code> returns a <code class="highlighter-rouge">void</code> just like how it’s stated in the webidl.</p>
+<p>Ohhh how <em>neat</em>! Now we know exactly how to start writing the <code class="highlighter-rouge">append</code> method.</p>
 
 <p>The spec for append states that:</p>
 
 <blockquote>
 
-  <p>The append(word) method, when invoked, must append word to the associated such list.</p>
+  <p>The <code class="highlighter-rouge">append(word)</code> method, when invoked, must append <code class="highlighter-rouge">word</code> to the associated <em>such list</em>.</p>
 </blockquote>
 
 <p>So we know that we should write like the following:</p>
 
 <figure class="highlight"><pre><code class="language-rust" data-lang="rust"><span class="c">// https://jeenalee.github.io/doge-standard/#dom-doge-append</span>
-<span class="k">fn</span> <span class="nf">Append</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">,</span> <span class="n">word</span><span class="p">:</span> <span class="n">ByteString</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="p">()</span> <span class="p">{</span>
-    <span class="o">*&amp;</span><span class="k">self</span><span class="py">.such_list</span><span class="nf">.borrow_mut</span><span class="p">()</span><span class="nf">.push</span><span class="p">(</span><span class="n">word</span><span class="p">);</span>
+<span class="k">fn</span> <span class="nf">Append</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">,</span> <span class="n">word</span><span class="p">:</span> <span class="n">DOMString</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">self</span><span class="py">.such_list</span><span class="nf">.borrow_mut</span><span class="p">()</span><span class="nf">.push</span><span class="p">(</span><span class="n">word</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
 <p><strong><code class="highlighter-rouge">random</code> method</strong></p>
@@ -229,32 +235,32 @@ Constructor <em>constructs</em> the new Doge object, and will add some fields if
   <p>The random() method, when invoked, must run these steps:</p>
 
   <ol>
-    <li>Let list be the associated such list.</li>
-    <li>If list has a length of zero, throw a TypeError.</li>
-    <li>Return a randomly chosen word from list.</li>
+    <li>Let <em>list</em> be the associated <em>such list</em>.</li>
+    <li>If <em>list</em> has a length of zero, throw a <code class="highlighter-rouge">TypeError</code>.</li>
+    <li>Return a randomly chosen word from <em>list</em>.</li>
   </ol>
 </blockquote>
 
 <p>Because <code class="highlighter-rouge">random</code> method can <em>throw</em> an error, we should specify it in our webidl. Add a <code class="highlighter-rouge">[Throws]</code> in front of <code class="highlighter-rouge">random</code> like this:</p>
 
 <figure class="highlight"><pre><code class="language-console" data-lang="console">interface Doge {
-  void append(ByteString word);
-  [Throws] ByteString random();
+  void append(DOMString word);
+  [Throws] DOMString random();
 };</code></pre></figure>
 
 <p>Let’s now write the <code class="highlighter-rouge">random</code> method per spec:</p>
 
 <figure class="highlight"><pre><code class="language-rust" data-lang="rust"><span class="c">// https://jeenalee.github.io/doge-standard/#dom-doge-random</span>
-<span class="k">fn</span> <span class="nf">Random</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="n">Fallible</span><span class="o">&lt;</span><span class="n">ByteString</span><span class="o">&gt;</span> <span class="p">{</span>
+<span class="k">fn</span> <span class="nf">Random</span><span class="p">(</span><span class="o">&amp;</span><span class="k">self</span><span class="p">)</span> <span class="k">-&gt;</span> <span class="n">Fallible</span><span class="o">&lt;</span><span class="n">DOMString</span><span class="o">&gt;</span> <span class="p">{</span>
     <span class="c">// Step 1</span>
-    <span class="k">let</span> <span class="n">l</span> <span class="o">=</span> <span class="k">self</span><span class="py">.such_list</span><span class="nf">.borrow</span><span class="p">();</span>
+    <span class="k">let</span> <span class="n">list</span> <span class="o">=</span> <span class="k">self</span><span class="py">.such_list</span><span class="nf">.borrow</span><span class="p">();</span>
     <span class="c">// Step 2</span>
-    <span class="k">if</span> <span class="n">l</span><span class="nf">.len</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="n">list</span><span class="nf">.len</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
         <span class="k">return</span> <span class="nf">Err</span><span class="p">(</span><span class="nn">Error</span><span class="p">::</span><span class="nf">Type</span><span class="p">(</span><span class="s">"Such list is empty"</span><span class="nf">.to_string</span><span class="p">()));</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="c">// Step 3</span>
-        <span class="k">let</span> <span class="n">random_index</span> <span class="o">=</span> <span class="nn">rand</span><span class="p">::</span><span class="nf">thread_rng</span><span class="p">()</span><span class="nf">.gen_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="nf">.len</span><span class="p">());</span>
-            <span class="k">return</span> <span class="nf">Ok</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">random_index</span><span class="p">]</span><span class="nf">.clone</span><span class="p">());</span>
+        <span class="k">let</span> <span class="n">random_index</span> <span class="o">=</span> <span class="nn">rand</span><span class="p">::</span><span class="nf">thread_rng</span><span class="p">()</span><span class="nf">.gen_range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">list</span><span class="nf">.len</span><span class="p">());</span>
+        <span class="k">return</span> <span class="nf">Ok</span><span class="p">(</span><span class="n">list</span><span class="p">[</span><span class="n">random_index</span><span class="p">]</span><span class="nf">.clone</span><span class="p">());</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -262,7 +268,11 @@ Constructor <em>constructs</em> the new Doge object, and will add some fields if
 
 <p><img src="/pics/doge/doge-demo.gif" alt="doge demo" /></p>
 
-<p>This tutorial does not cover <em>everything</em> you should know when implementing a DOM API, but I hope this helped you get started! Sometimes the spec will be unclear, and sometimes it will be impossible the implement exactly as the spec says. When you encounter a situation like that, reach out to Servo and spec maintainers! They are friendly and helpful people.</p>
+<p><font face="Comic Sans MS" color="#8e00df">Wow!</font> <font face="Comic Sans MS" color="#40df00">Such amazing!</font> <font face="Comic Sans MS" color="#0074df">Very cool.</font></p>
+
+<p>To see the full implementation, please check out the <a href="https://github.com/jeenalee/servo/tree/doge">doge branch in my Servo fork</a>.</p>
+
+<p>This tutorial does not cover <em>everything</em> you should know when implementing a DOM API, but I hope this helped you get started! Sometimes the spec will be unclear, and sometimes it will be impossible to implement an API exactly as the spec states. When you encounter a situation like that or when you need help, reach out to Servo and spec maintainers! They are friendly and helpful people. 😊</p>
 
   </div>
 
