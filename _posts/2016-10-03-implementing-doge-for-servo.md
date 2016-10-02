@@ -150,7 +150,7 @@ The spec states:
 The `random()` method, when invoked, must run these steps:
 >
 1. Let *list* be the associated *such list*.
-2. If *list* has a length of zero, throw a `TypeError`.
+2. If *list* is empty, throw a `TypeError`.
 3. Return a randomly chosen word from *list*.
 
 Because `random` method can *throw* an error, we should specify it in our Web IDL. Add `[Throws]` in front of `random` like this:
