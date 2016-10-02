@@ -67,7 +67,7 @@ Let's write the functions required for creating a new Doge object!
 We need three functions for creating a new Doge object: `new_inherited`, `new` and `Constructor`. `Constructor` is called by the JS world, which calls `new`, which in turn calls `new_inherited`. Let's work on `new_inherited`, `new`, and then `Constructor`.
 
 - `new_inherited`:
-This is where an instance of the Doge struct is created. Sometimes, parameters may be used here, but Doge doesn't require any:
+This is where an instance of the Doge struct is created. Sometimes, parameters may be used here, but Doge doesn't require any (because Doge is a strong independent doggo💕):
 {% highlight rust %}
 pub fn new_inherited() -> Doge {
     Doge {
