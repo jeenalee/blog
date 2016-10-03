@@ -120,7 +120,7 @@ interface Doge {
   // DOMString random();
 };
 {% endhighlight %}
-Now we'll try to compile. This will definitely fail! *However*, the DOM bindings generator creates a code related to Doge. You can find that in `target/debug/build/script-[hash]/out/Bindings/DogeBinding.rs` or something like that. This is also where you can find `DogeWrap`, which I meantioned earlier. Search for `DogeMethods`, and it will show:
+Now we'll try to compile. This will definitely fail! *However*, the DOM bindings generator creates a code related to Doge. You can find that in `target/debug/build/script-[hash]/out/Bindings/DogeBinding.rs` or something like that. This is also where you can find `DogeWrap`, which I mentioned earlier. Search for `DogeMethods`, and it will show:
 {% highlight rust %}
 pub trait DogeMethods {
     fn Append(&self, word: DOMString) -> ();
