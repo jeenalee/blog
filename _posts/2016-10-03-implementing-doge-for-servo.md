@@ -187,6 +187,6 @@ To see the full implementation, check out the [doge commit in my Servo fork](htt
 
 This tutorial does not cover everything related to implementing a DOM API, but I hope this helped you get started! Sometimes the spec will be unclear, and sometimes it will be impossible to implement an API exactly as the spec states. When you encounter a situation like that or when you need help, reach out to Servo and spec maintainers! They are friendly and helpful people. 😊
 
-Malisa will write a blog post about the DOM API testing process in Servo, so stay tuned!
+Malisa wrote a [blog post about the DOM API testing process in Servo](http://hellomalisa.me/2016-10-24/how-to-test-a-servo-dom-api.html), so read about it!
 
 <small>Many thanks to [Josh Matthews](https://twitter.com/lastontheboat) (`jdm`) for reviewing the blog post.</small>
