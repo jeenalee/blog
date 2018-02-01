@@ -79,7 +79,7 @@ pub fn new_inherited() -> Doge {
 - `new`:
 This is where a connection between the JS world (`global`) and the Rust Doge object is created. It does so by calling a function `reflect_dom_object`, which takes three parameters including one called `DogeWrap`. `DogeWrap` is a DOM bindings generated code (more on that later) that sets up the JS reflector (`reflector_`) for the Doge type. `new` method returns a JS Rooted object (`Root<Doge>`), which will prevent the JavaScript garbage collector from collecting this object while it's used in the Rust world.
 {% highlight rust %}
-pub fn new(global: GlobalRef) -> Root<Doge> {
+pub fn new(global: &GlobalScope) -> Root<Doge> {
         reflect_dom_object(box Doge::new_inherited(), global, DogeWrap)
 }
 {% endhighlight %}
@@ -94,7 +94,7 @@ This function constructs the new Doge object, and will add some fields if an ini
 So, we follow the spec, and write the constructor! `Constructor()` must return the `Fallible` type, which is one of Servo's custom `Result` types.
 {% highlight rust %}
 // https://jeenalee.github.io/doge-standard/#dom-doge
-pub fn Constructor(global: GlobalRef, init: Option<DogeInit>) -> Fallible<Root<Doge>> {
+pub fn Constructor(global: &GlobalScope, init: Option<DogeInit>) -> Fallible<Root<Doge>> {
     // Step 1
     let doge = Doge::new(global);
     // Step 2
@@ -171,7 +171,7 @@ fn Random(&self) -> Fallible<DOMString> {
         return Err(Error::Type("Such list is empty".to_string()));
     } else {
         // Step 3
-        let random_index = rand::thread_rng().gen_range(0, list.len());
+        let random_index = servo_rand::thread_rng().gen_range(0, list.len());
         return Ok(list[random_index].clone());
     }
 }
